@@ -1,0 +1,81 @@
+name: 🎬 Generate & Post Ad
+
+# ── Triggers ───────────────────────────────────────────────────────────────────
+on:
+  # Run on a schedule (every Monday & Thursday at 7 AM IST = 1:30 AM UTC)
+  schedule:
+    - cron: "30 1 * * 1,4"
+
+  # Also allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+  # Also trigger on push to main (useful for testing)
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "assets/**"
+      - "run_pipeline.py"
+
+# ── Jobs ───────────────────────────────────────────────────────────────────────
+jobs:
+  generate-and-post:
+    name: Build Video & Post to FB + Instagram
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      # 2. Authenticate to Google Cloud
+      - name: 🔐 Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_KEY }}
+
+      # 3. Set up Cloud SDK
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # 4. Install system dependencies (ffmpeg + imagemagick)
+      - name: 📦 Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg imagemagick fonts-dejavu-core
+
+      # 5. Fix ImageMagick policy for MoviePy TextClip
+      - name: 🔧 Fix ImageMagick policy
+        run: |
+          sudo sed -i 's/rights="none" pattern="@\*"/rights="read|write" pattern="@*"/' \
+            /etc/ImageMagick-6/policy.xml || true
+
+      # 6. Set up Python
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # 7. Install Python dependencies
+      - name: 📥 Install Python deps
+        run: pip install -r requirements.txt
+
+      # 8. Run the full pipeline
+      - name: 🚀 Generate video & post to social media
+        env:
+          FB_PAGE_ID:        ${{ secrets.FB_PAGE_ID }}
+          FB_ACCESS_TOKEN:   ${{ secrets.FB_ACCESS_TOKEN }}
+          IG_USER_ID:        ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN:   ${{ secrets.IG_ACCESS_TOKEN }}
+          GCS_BUCKET_NAME:   ${{ secrets.GCS_BUCKET_NAME }}
+        run: python run_pipeline.py
+
+      # 9. Upload the generated video as an artifact (optional debug)
+      - name: 📎 Upload video artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad-video
+          path: output/ad_video.mp4
+          retention-days: 7
