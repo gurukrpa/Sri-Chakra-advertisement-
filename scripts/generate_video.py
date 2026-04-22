@@ -9,6 +9,10 @@ import os
 import textwrap
 from pathlib import Path
 
+# Tell MoviePy where ImageMagick is (required for TextClip on macOS)
+from moviepy.config import change_settings
+change_settings({"IMAGEMAGICK_BINARY": "/opt/homebrew/bin/magick"})
+
 from gtts import gTTS
 from moviepy.editor import (
     AudioFileClip,
@@ -25,9 +29,9 @@ OUTPUT_DIR = Path(__file__).parent.parent / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 BG_COLOR = (88, 24, 69)       # deep purple from brand image
-ACCENT    = (255, 193, 7)     # gold/yellow
+ACCENT    = "#FFC107"     # gold/yellow
 TEXT_COLOR = "white"
-FONT       = "DejaVu-Sans-Bold"
+FONT       = "/Users/apple/Library/Fonts/DejaVuSans-Bold.ttf"
 VIDEO_SIZE = (1080, 1080)     # square (FB + IG friendly)
 FPS        = 24
 
@@ -83,7 +87,7 @@ def make_line_clip(speaker: str, text: str, audio_path: str) -> CompositeVideoCl
     badge = TextClip(
         "₹19,500 → ₹14,999  |  30% OFF  |  Starts May",
         fontsize=32,
-        color=str(ACCENT),
+        color=ACCENT,
         font=FONT,
     ).set_position(("center", VIDEO_SIZE[1] - 120)).set_duration(duration)
 
