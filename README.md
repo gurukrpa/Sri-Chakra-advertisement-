@@ -4,6 +4,102 @@ Automatically generate a promotional video and post it to **Facebook** and **Ins
 
 ---
 
+## 🔴 RESUME FROM HERE (Next Session / Tomorrow)
+
+> **Last worked on: April 22, 2026**
+> Everything below is already done except Step 3 & 4.
+
+### ✅ Already Completed
+| Item | Detail |
+|---|---|
+| GitHub repo | `gurukrpa/Sri-Chakra-advertisement-` |
+| GCP Project | `srichakra-ads-2026` |
+| GCS Bucket | `gs://srichakra-ads-videos-2026` (Mumbai) |
+| Service Account | `ad-automation-sa@srichakra-ads-2026.iam.gserviceaccount.com` |
+| GitHub Secret `GCS_BUCKET_NAME` | ✅ Set |
+| GitHub Secret `GCLOUD_SERVICE_ACCOUNT_KEY` | ✅ Set |
+| GitHub Secret `HEYGEN_API_KEY` | ✅ Set |
+| Meta App | App ID: `2301766777017206` |
+| FB Page ID | `102020288738081` (Srichakra page) |
+| Instagram linked | Linked to Srichakra Page |
+| Video generator | Working locally — 30-sec animated MP4 |
+| GitHub Actions workflow | Ready — auto-posts Mon & Thu 7 AM IST |
+
+---
+
+### 🔜 NEXT — 3 Steps to Go Live
+
+#### Step 1 — Get a fresh FB Access Token
+Open this in browser on any laptop:
+```
+https://developers.facebook.com/tools/explorer/?app_id=2301766777017206
+```
+In Graph API Explorer:
+1. Select App: **2301766777017206**
+2. Click **"Generate Access Token"**
+3. Tick these permissions:
+   - `pages_manage_posts`
+   - `pages_read_engagement`
+   - `instagram_basic`
+   - `instagram_content_publish`
+4. Select page: **Srichakra** (not personal profile)
+5. Copy the `EAA...` token
+
+> ⚠️ Token expires in ~1 hour — use it immediately in Step 2
+
+---
+
+#### Step 2 — Get Instagram Business Account ID
+Once you have the token, run this in terminal:
+```bash
+curl -s "https://graph.facebook.com/v19.0/102020288738081?fields=instagram_business_account,name&access_token=YOUR_EAA_TOKEN"
+```
+Copy the `id` value from `instagram_business_account` (starts with `17841...`)
+
+---
+
+#### Step 3 — Add 4 secrets to GitHub
+Go to: https://github.com/gurukrpa/Sri-Chakra-advertisement-/settings/secrets/actions
+
+Add these 4 secrets:
+| Secret Name | Value |
+|---|---|
+| `FB_PAGE_ID` | `102020288738081` |
+| `FB_ACCESS_TOKEN` | The `EAA...` token from Step 1 |
+| `IG_USER_ID` | The `17841...` ID from Step 2 |
+| `IG_ACCESS_TOKEN` | Same as `FB_ACCESS_TOKEN` |
+
+**OR** paste the `EAA...` token to GitHub Copilot — it will run Steps 2 & 3 automatically.
+
+---
+
+#### Step 4 — Trigger the workflow manually
+Go to:
+```
+https://github.com/gurukrpa/Sri-Chakra-advertisement-/actions
+```
+Click **"🎬 Generate & Post Ad"** → **"Run workflow"** → **"Run workflow"**
+
+✅ Video will be generated and posted to Facebook & Instagram automatically.
+
+---
+
+#### ⚠️ Security Note
+After everything works, **regenerate the token** in Graph API Explorer and update `FB_ACCESS_TOKEN` + `IG_ACCESS_TOKEN` secrets. Old tokens become useless.
+
+For a permanent token (60 days), exchange it:
+```
+GET https://graph.facebook.com/v19.0/oauth/access_token
+  ?grant_type=fb_exchange_token
+  &client_id=2301766777017206
+  &client_secret=YOUR_APP_SECRET
+  &fb_exchange_token=SHORT_LIVED_EAA_TOKEN
+```
+
+---
+
+---
+
 ## 👥 Multi-Admin / Multi-Laptop Workflow
 
 This repo is designed so **any admin on any laptop** can clone it and pick up exactly where it left off.
