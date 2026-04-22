@@ -1,6 +1,38 @@
-# 🎬 Ad Automation — Master Setup Guide
+# 🎬 Sri Chakra Ad Automation — Master Setup Guide
 
 Automatically generate a promotional video and post it to **Facebook** and **Instagram** on a schedule using **GitHub Actions + Google Cloud**.
+
+---
+
+## 👥 Multi-Admin / Multi-Laptop Workflow
+
+This repo is designed so **any admin on any laptop** can clone it and pick up exactly where it left off.
+
+### How it works across laptops:
+```
+Laptop A (this Mac)        →  Pushed all code, GCloud setup done, video tested ✅
+Laptop B (admin's laptop)  →  Clone repo, add FB/IG secrets, done ✅
+GitHub Actions             →  Runs automatically — no laptop needed after setup ✅
+```
+
+### For the admin who will connect Facebook & Instagram:
+1. Clone the repo on your laptop:
+   ```bash
+   git clone --recurse-submodules git@github.com:gurukrpa/Sri-Chakra-advertisement-.git
+   cd Sri-Chakra-advertisement-
+   ```
+2. Install deps:
+   ```bash
+   pip3 install -r requirements.txt
+   brew install ffmpeg imagemagick
+   ```
+3. Follow **Step 3** below to get FB/IG tokens
+4. Add the 4 remaining GitHub secrets (FB_PAGE_ID, FB_ACCESS_TOKEN, IG_USER_ID, IG_ACCESS_TOKEN)
+5. Go to GitHub → **Actions** → **"🎬 Generate & Post Ad"** → **Run workflow** to trigger manually
+
+> ⚠️ The `GCLOUD_SERVICE_ACCOUNT_KEY` and `GCS_BUCKET_NAME` secrets are **already set** — do not change them.
+
+---
 
 ---
 
@@ -201,6 +233,35 @@ ad-automation/
 ## Credits
 
 - Video generation: [MoviePy](https://zulko.github.io/moviepy/) + [gTTS](https://gtts.readthedocs.io/)
-- Hosting: Google Cloud Storage
-- Automation: GitHub Actions
+- Hosting: Google Cloud Storage (`srichakra-ads-videos-2026`, region: asia-south1)
+- Automation: GitHub Actions (auto-runs Mon & Thu 7 AM IST)
 - Social APIs: Meta Graph API v19.0
+- GCP Project: `srichakra-ads-2026`
+- GitHub Repo: [gurukrpa/Sri-Chakra-advertisement-](https://github.com/gurukrpa/Sri-Chakra-advertisement-)
+
+---
+
+## 🧰 Included Tools (Git Submodules)
+
+These two tools are bundled into this repo as **git submodules** — they will automatically download when anyone clones this repo with `--recurse-submodules`.
+
+### 📊 graphify
+- **Repo:** https://github.com/safishamsi/graphify
+- **What it does:** AI coding assistant — reads your files, builds a knowledge graph, helps understand any codebase fast
+- **Use it:** Type `/graphify` in Claude, Copilot, Cursor, Gemini CLI etc.
+- **Local path:** `./graphify/`
+
+### 🔗 GitNexus
+- **Repo:** https://github.com/abhigyanpatwari/GitNexus
+- **What it does:** Git intelligence tool — powerful repo analysis and navigation
+- **Local path:** `./GitNexus/`
+
+### Cloning with submodules (any laptop):
+```bash
+git clone --recurse-submodules git@github.com:gurukrpa/Sri-Chakra-advertisement-.git
+```
+
+### If you already cloned without `--recurse-submodules`:
+```bash
+git submodule update --init --recursive
+```
