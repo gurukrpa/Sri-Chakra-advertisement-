@@ -6,8 +6,9 @@ Automatically generate a promotional video and post it to **Facebook** and **Ins
 
 ## 🔴 RESUME FROM HERE (Next Session / Tomorrow)
 
-> **Last worked on: April 22, 2026**
-> Everything below is already done except Step 3 & 4.
+> **Last worked on: April 23, 2026**
+> Everything is built and working. Only the Facebook/Instagram connection is pending.
+> **The other admin needs to do the 4 steps below on her laptop.**
 
 ### ✅ Already Completed
 | Item | Detail |
