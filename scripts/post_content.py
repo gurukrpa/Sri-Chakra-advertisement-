@@ -22,6 +22,14 @@ from typing import Optional
 
 import requests
 
+
+def _check(resp: "requests.Response", label: str) -> None:
+    """Raise with full Facebook/IG error body so we can debug 400s."""
+    if resp.status_code >= 400:
+        body = resp.text[:1000]
+        raise RuntimeError(f"{label} HTTP {resp.status_code}: {body}")
+
+
 ROOT = Path(__file__).resolve().parent.parent
 POSTERS_DIR = ROOT / "content" / "posters"
 VIDEOS_DIR = ROOT / "content" / "videos"
@@ -132,7 +140,7 @@ def fb_post_photo(image_path: Path, caption: str) -> dict:
             files={"source": f},
             timeout=300,
         )
-    r.raise_for_status()
+    _check(r, "FB photo")
     print(f"[FB OK] photo id={r.json().get('id')}")
     return r.json()
 
@@ -150,7 +158,7 @@ def fb_post_video(video_path: Path, caption: str) -> dict:
             files={"source": f},
             timeout=600,
         )
-    r.raise_for_status()
+    _check(r, "FB video")
     print(f"[FB OK] video id={r.json().get('id')}")
     return r.json()
 
@@ -184,7 +192,7 @@ def ig_post_image(image_url: str, caption: str) -> dict:
         },
         timeout=60,
     )
-    r.raise_for_status()
+    _check(r, "IG image container")
     cid = r.json()["id"]
     _ig_wait(cid)
     pub = requests.post(
@@ -192,7 +200,7 @@ def ig_post_image(image_url: str, caption: str) -> dict:
         data={"access_token": IG_ACCESS_TOKEN, "creation_id": cid},
         timeout=60,
     )
-    pub.raise_for_status()
+    _check(pub, "IG image publish")
     print(f"[IG OK] image media id={pub.json().get('id')}")
     return pub.json()
 
@@ -210,7 +218,7 @@ def ig_post_reel(video_url: str, caption: str) -> dict:
         },
         timeout=60,
     )
-    r.raise_for_status()
+    _check(r, "IG reel container")
     cid = r.json()["id"]
     _ig_wait(cid)
     pub = requests.post(
@@ -218,7 +226,7 @@ def ig_post_reel(video_url: str, caption: str) -> dict:
         data={"access_token": IG_ACCESS_TOKEN, "creation_id": cid},
         timeout=60,
     )
-    pub.raise_for_status()
+    _check(pub, "IG reel publish")
     print(f"[IG OK] reel media id={pub.json().get('id')}")
     return pub.json()
 
